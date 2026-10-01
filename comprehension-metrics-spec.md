@@ -67,7 +67,7 @@ Not in v1: any score of how understandable the agent's output is (comprehensibil
 ## 7. Outputs
 
 1. Metrics paper: definitions, validity results, and findings on SWE-chat: distribution of M1 categories; verification rates; overclaim-caught and misbehavior-addressed rates overall and per model; direction-versus-delegation rates and delegation depth; expressed understanding rates. Comparison point: Transluce's overselling and monitor-evasion prevalence on the same data, so the paper can say what fraction of those the humans caught.
-2. Open-source pipeline (license to decide): SWE-chat and Claude Code/Codex JSONL converters to Docent's AgentRun format preserving metadata; the metric readings as versioned prompts and schemas; the codebook; the labeling protocol; analysis notebooks that go from DQL export to the paper's tables; a backend interface so the Docent dependency can be swapped for a local pipeline.
+2. Open-source pipeline (code, prompts and schemas under MIT; codebook, labeling protocol, docs and labels under CC BY 4.0; see CONTRIBUTING.md): SWE-chat and Claude Code/Codex JSONL converters to Docent's AgentRun format preserving metadata; the metric readings as versioned prompts and schemas; the codebook; the labeling protocol; analysis notebooks that go from DQL export to the paper's tables; a backend interface so the Docent dependency can be swapped for a local pipeline.
 3. Public Docent collection with the readings and citations, if Transluce's sharing terms allow, so readers can inspect any cited episode.
 4. A dated forward claim for the registry (E1): the expected direction of these metrics over the next year.
 
@@ -92,12 +92,12 @@ Decided Sept 29:
 - Substrate: Docent hosted with bring-your-own keys for v1. The pipeline keeps a backend interface so the released code does not depend on it. Confirm Transluce's terms for a public collection before publishing one.
 - M3/M4 prevalence: reported, not only the caught/addressed rates. Overclaim and misbehavior prevalence is re-measured with our rubrics so the caught rates have a matched denominator, and compared with Transluce's published rates as a consistency check. This means the M3/M4 intermediates are published metrics; section 4's "not itself a published oversight metric" is superseded for prevalence, and section 9's safeguard applies to comprehensibility scoring only, which stays out.
 - Labeling: PI labels the 50-episode pilot alone and writes the codebook against those cases; two hired labelers do the full 300-episode sample once the codebook is stable, with Ron adjudicating disagreements. Update section 6 accordingly: pilot kappa is not reported; full-sample kappa is between the two hired labelers.
+- License (decided Oct 1): code, prompts and schemas stay MIT, the norm among the nearest related projects (SWE-chat, Inspect, METR, SWE-bench). Apache 2.0 isn't needed because the pipeline calls Docent's SDK without copying its code. The codebook, labeling protocol, docs and labels are CC BY 4.0, and anything released with SWE-chat text also carries its ODC-By attribution. Contributors keep their copyright and contribute under these licenses; no CLA.
 
 Still open:
 1. Judge model and reasoning setting (cost versus quality; Transluce used Opus-class with high reasoning). Proposal: pilot on 50 sessions with two candidate models, pick by agreement with pilot labels and cost.
 2. Kappa threshold for reporting a metric as validated (proposed 0.6).
 3. Paper venue and the date that sets the schedule (memo milestone: comprehension metrics published in months 4-6).
-4. License for the pipeline (Apache 2.0 matches Docent).
 
 ## 11. Open questions for the build
 
