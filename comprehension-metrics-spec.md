@@ -10,18 +10,18 @@ v1 scope decisions (Sept 29):
 - Purpose: metrics paper plus released pipeline. Contest examples are a byproduct, not a target.
 - Metric family: oversight metrics only (the human side). Agent-output comprehensibility (asked-versus-delivered, explanation-matches-diff) is out of v1 except where an agent-side judgment is an intermediate input to an oversight metric (section 4).
 - Validation: staff labels on a stratified sample with inter-labeler agreement and judge-versus-label agreement. No recruitment of transcript authors in v1.
-- Data: SWE-chat only.
+- Data: SWE-chat only, and Claude Code sessions only (decided Oct 1). The other agent products in SWE-chat have too few users to support results (OpenCode 14, Gemini CLI 8, Codex 4, Cursor 3). The paper names them as a limitation, with session and user counts, and makes no claims about them.
 
 ## 2. Definitions
 
-- Session: one transcript of a human working with a coding agent (Claude Code, Codex, Gemini CLI) as recorded in SWE-chat.
+- Session: one transcript of a human working with a coding agent product as recorded in SWE-chat. v1 uses Claude Code sessions only.
 - Turn: one message. Human turns, agent turns, tool calls and tool results are distinct.
 - Episode: a span that starts when the agent delivers something the human could review (a completed edit, a claimed completion, a summary of changes, a request for approval) and ends at the next human turn that moves on (new instruction, approval, session end). Episodes are the unit most metrics score; sessions aggregate them.
 - Oversight: observable human behavior in the transcript that checks, questions, corrects, constrains or verifies the agent's work. The metrics measure oversight, not comprehension; comprehension is inferred only where the human's words show it (section 4, M6), and the paper says so.
 
 ## 3. Inputs
 
-- SWE-chat sessions (arXiv 2604.20779; public release). Ingest every session with at least one human turn after the first agent action. Record per session: agent product and model where available, session length, number of human turns, task type if the dataset labels it, and any commit or checkpoint linkage the dataset provides. Data is at https://huggingface.co/datasets/SALT-NLP/SWE-chat
+- SWE-chat sessions (arXiv 2604.20779; public release). Ingest every Claude Code session with at least one human turn after the first agent action; these form the study population, which includes sessions added after Transluce's study. Pin the release: Hugging Face revision f66cca95 (last modified April 29, 2026), and report all counts and results against it. Record per session: model where available, session length, number of human turns, task type if the dataset labels it, and any commit or checkpoint linkage the dataset provides. Data is at https://huggingface.co/datasets/SALT-NLP/SWE-chat
 - Metadata preserved from the source at message level: timestamps, permission prompts and their resolution, interrupts, tool names, tool errors. Where SWE-chat does not carry a field, the converter records its absence rather than a default.
 - No private or volunteer logs in v1.
 
@@ -45,7 +45,7 @@ M7 Questions asked. Count of human turns that ask why or how about the change or
 
 M8 Time lag. What was the time between the agent turn and the human response? This is ambiguous (is delay caused by the user reading/inspecting or multitasking or away from keyboard) but can be triangulated (are there parallel sessions?) and also per user/session delay histograms may be instructive.
 
-Session-level descriptors reported beside the metrics, not scored: agent product and model, session length in turns and (if available) wall-clock, number of episodes, number of permission prompts and their auto-accept rate, task type.
+Session-level descriptors reported beside the metrics, not scored: model, session length in turns and (if available) wall-clock, number of episodes, number of permission prompts and their auto-accept rate, task type.
 
 Not in v1: any score of how understandable the agent's output is (comprehensibility), any learned proxy for human understanding, any per-user ranking. Per-user breakdowns are computed for the analysis and published only as distributions.
 
@@ -58,7 +58,7 @@ Not in v1: any score of how understandable the agent's output is (comprehensibil
 
 ## 6. Validation
 
-- Sample: stratified by agent product, session length tercile, and presence of an M3/M4 flag. Target 300 episodes and 100 sessions for session-level metrics, adjustable after the pilot sample (50 sessions).
+- Sample: stratified by session length tercile, and presence of an M3/M4 flag. Target 300 episodes and 100 sessions for session-level metrics, adjustable after the pilot sample (50 sessions).
 - Pilot: the PI and the student collaborator both label the episodes in the pilot sample (50 sessions), blind to judge output and to each other, so inter-rater agreement is measured from the start. The codebook (section 4 definitions with worked examples) is written against these cases. Pilot labels tune the prompts and choose the episode segmentation rule and the judge model. Still open, in the labeling protocol: whether codebook drafting comes before or after independent labeling, how episodes are bounded before a segmentation rule exists, how pilot disagreements are adjudicated, and whether pilot agreement is reported.
 - Full sample: two hired labelers, blind to judge output and to each other, label every metric using the codebook. Cohen's kappa per metric between labelers; disagreements adjudicated by PI; adjudicated labels are the gold set.
 - Judge versus gold: agreement, and for the categorical metrics precision and recall per category. A metric is reported in the paper only if judge-gold agreement clears a threshold set before labeling (proposed: kappa 0.6 or better against gold; below that the metric is reported as exploratory).
@@ -67,7 +67,7 @@ Not in v1: any score of how understandable the agent's output is (comprehensibil
 ## 7. Outputs
 
 1. Metrics paper: definitions, validity results, and findings on SWE-chat: distribution of M1 categories; verification rates; overclaim-caught and misbehavior-addressed rates overall and per model; direction-versus-delegation rates and delegation depth; expressed understanding rates. Comparison point: Transluce's overselling and monitor-evasion prevalence on the same data, so the paper can say what fraction of those the humans caught.
-2. Open-source pipeline (code, prompts and schemas under MIT; codebook, labeling protocol, docs and labels under CC BY 4.0; see CONTRIBUTING.md): SWE-chat and Claude Code/Codex JSONL converters to Docent's AgentRun format preserving metadata; the metric readings as versioned prompts and schemas; the codebook; the labeling protocol; analysis notebooks that go from DQL export to the paper's tables; a backend interface so the Docent dependency can be swapped for a local pipeline.
+2. Open-source pipeline (code, prompts and schemas under MIT; codebook, labeling protocol, docs and labels under CC BY 4.0; see CONTRIBUTING.md): a converter from SWE-chat's raw Claude Code transcripts to Docent's AgentRun format, preserving metadata, behind a format-adapter interface so converters for other agent products can be added; the metric readings as versioned prompts and schemas; the codebook; the labeling protocol; analysis notebooks that go from DQL export to the paper's tables; a backend interface so the Docent dependency can be swapped for a local pipeline.
 3. Public Docent collection with the readings and citations, if Transluce's sharing terms allow, so readers can inspect any cited episode.
 4. A dated forward claim for the registry (E1): the expected direction of these metrics over the next year.
 
@@ -93,6 +93,7 @@ Decided Sept 29:
 - M3/M4 prevalence: reported, not only the caught/addressed rates. Overclaim and misbehavior prevalence is re-measured with our rubrics so the caught rates have a matched denominator, and compared with Transluce's published rates as a consistency check. This means the M3/M4 intermediates are published metrics; section 4's "not itself a published oversight metric" is superseded for prevalence, and section 9's safeguard applies to comprehensibility scoring only, which stays out.
 - Labeling (revised Oct 1): the PI and the student collaborator both label the pilot sample, replacing "PI labels the pilot alone". Two hired labelers do the full 300-episode sample once the codebook is stable, with Ron adjudicating disagreements; full-sample kappa is between the two hired labelers. Section 6 reflects this; protocol details are still open.
 - License (decided Oct 1): code, prompts and schemas stay MIT, the norm among the nearest related projects (SWE-chat, Inspect, METR, SWE-bench). Apache 2.0 isn't needed because the pipeline calls Docent's SDK without copying its code. The codebook, labeling protocol, docs and labels are CC BY 4.0, and anything released with SWE-chat text also carries its ODC-By attribution. Contributors keep their copyright and contribute under these licenses; no CLA.
+- Agent products (decided Oct 1): v1 measures Claude Code only, on every qualifying Claude Code session in the pinned SWE-chat release. The Transluce replication uses only the 4,845 Claude Code sessions Transluce analyzed. Results are broken down per model within Claude Code.
 
 Still open:
 1. Judge model and reasoning setting (cost versus quality; Transluce used Opus-class with high reasoning). Proposal: pilot on 50 sessions with two candidate models, pick by agreement with pilot labels and cost.
