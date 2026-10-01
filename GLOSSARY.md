@@ -20,7 +20,7 @@ _Avoid_: Agent (on its own)
 A span within a session that starts when the agent delivers something the human could review and ends at the next human turn that moves on.
 
 **Study population**:
-Every Claude Code session in the pinned SWE-chat release that has at least one human turn after the first agent action.
+Every Claude Code session in the pinned, recent SWE-chat snapshot that has at least one human turn after the first agent action.
 _Avoid_: Dataset, corpus
 
 **Pilot sample**:
