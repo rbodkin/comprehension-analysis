@@ -16,6 +16,10 @@ _Avoid_: Agent (on its own), harness, CLI
 The LLM behind an agent product in a session; one session can involve several models.
 _Avoid_: Agent (on its own)
 
+**Attributed model**:
+The model that produced the message a measurement unit is anchored to, such as the delivery message an episode's response judges, or the main-loop message that shows the human an overclaim. Per-model results group by it.
+_Avoid_: Session model, the session's model
+
 **Episode**:
 A span within a session that starts when the agent delivers something the human could review and ends at the next human turn that moves on.
 
